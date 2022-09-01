@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -46,6 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
   WeatherResponse? _response=null;
   // final String city="ahmedabad";
 
+
+  Widget appBarTitle=new Text("Weather App");
+  Icon actionIcon=new Icon(Icons.search);
+  Icon curruntLoc=new Icon(CupertinoIcons.location_circle);
 
 
   Future<void> _getGeoLocationPosition() async {
@@ -159,23 +164,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     return Scaffold(
       // backgroundColor: Color(0xFFf9f9f9),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFf9f9f9),
-          title: const Text("Weather",
-            style: TextStyle(
-                color: Colors.black
+        appBar: new AppBar(
+          title: appBarTitle,
+          actions: [
+            new IconButton(
+                onPressed: (){
+                  _getGeoLocationPosition();
+                },
+                icon: curruntLoc,
             ),
-          ),
-          centerTitle: true,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: (){
+            new IconButton(
+              onPressed: (){
+                setState(() {
+                  if(this.actionIcon.icon==Icons.search){
+                    this.actionIcon=new Icon(Icons.close);
+                    this.curruntLoc=new Icon(Icons.clear);
 
-            },
-            icon: const Icon(Icons.menu),
-            color: Colors.black,
-          ),
+                    this.appBarTitle=new TextField(
+                      style: new TextStyle(
+                        color: Colors.white,
+                      ),
+                      decoration: new InputDecoration(
+                        prefixIcon: new IconButton(
+                            onPressed: (){
+                              _search();
+                              _cityTextController.clear();
+                            },
+                            icon: new Icon(Icons.search,color: Colors.white),
+
+                        ),
+                        hintText: "Search city......",
+                        hintStyle: new TextStyle(color: Colors.white),
+                      ),
+                      controller: _cityTextController,
+                    );
+
+                  }
+                  else{
+                    this.actionIcon=new Icon(Icons.search);
+                    this.curruntLoc=new Icon(CupertinoIcons.location_circle);
+                    this.appBarTitle=new Text("Weather");
+                  }
+                });
+              },
+              icon: actionIcon,
+            )
+          ],
         ),
+
         body: FutureBuilder(
           future: _response==null?_getGeoLocationPosition():_sear(),
           builder: (context, snapshot) {
